@@ -1,5 +1,3 @@
 package com.colin.example.simpletodolist.todo.dto
 
-class InsertPostRequestDto {
-
-}
+data class InsertTodoResponseDto(val id: Long)
