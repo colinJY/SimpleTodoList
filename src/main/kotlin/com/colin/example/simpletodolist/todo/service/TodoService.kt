@@ -4,6 +4,7 @@ import com.colin.example.simpletodolist.todo.domain.TodosRepository
 import com.colin.example.simpletodolist.todo.dto.InsertTodoRequestDto
 import com.colin.example.simpletodolist.todo.dto.InsertTodoResponseDto
 import com.colin.example.simpletodolist.todo.dto.SelectTodoResponseDto
+import com.colin.example.simpletodolist.todo.exception.TodosNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.lang.IllegalArgumentException
@@ -21,7 +22,7 @@ class TodoService(private val todosRepository: TodosRepository) {
     fun selectTodo(id: Long): SelectTodoResponseDto {
 
         val selectedTodo = todosRepository.findById(id)
-                .orElseThrow { throw IllegalArgumentException("입력하신 ID에 존재하는 TODO가 없습니다.") }
+                .orElseThrow { throw TodosNotFoundException("Todo내역에서 존재하지 않습니다.") }
 
         return SelectTodoResponseDto(selectedTodo)
     }

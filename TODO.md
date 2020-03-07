@@ -2,14 +2,14 @@
 ========
 1. TODO 프로그램 작성
    * 구현내용
-       ```
-       * TODO 등록
-       * TODO 리스트 조회
-       * TODO 상세 조회
-       * TODO 수정
-       * TODO 삭제
-       * TODO 리스트 수정
-       ```
+        * TODO 등록
+        * TODO 상세 조회
+            * 조회성공
+            * 조회실패
+        * TODO 리스트 조회
+        * TODO 수정
+        * TODO 삭제
+        * TODO 리스트 수정
 2. SPRING REST DOCS 추가
     * 참고문서
         * [우아한형제들 - Spring Rest Docs 적용](https://woowabros.github.io/experience/2018/12/28/spring-rest-docs.html)
