@@ -91,7 +91,7 @@ internal class TodoControllerTest(
             jsonPath("$.code") { isNotEmpty }
             jsonPath("$.message") { isNotEmpty }
             jsonPath("$.detailMessage") { isNotEmpty }
-            jsonPath("$.errors") { isEmpty }
+            jsonPath("$.errors") { doesNotExist() }
         }
     }
 
