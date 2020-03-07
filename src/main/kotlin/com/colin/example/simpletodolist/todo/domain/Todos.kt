@@ -1,6 +1,6 @@
 package com.colin.example.simpletodolist.todo.domain
 
-import com.colin.example.simpletodolist.common.domain.BaseTimeEntity
+import com.colin.example.simpletodolist.global.domain.BaseTimeEntity
 import javax.persistence.*
 
 @Entity

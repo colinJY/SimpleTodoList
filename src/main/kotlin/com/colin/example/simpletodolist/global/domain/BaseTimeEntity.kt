@@ -1,4 +1,4 @@
-package com.colin.example.simpletodolist.common.domain
+package com.colin.example.simpletodolist.global.domain
 
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate

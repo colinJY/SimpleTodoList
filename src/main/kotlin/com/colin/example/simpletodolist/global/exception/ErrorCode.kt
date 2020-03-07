@@ -1,4 +1,4 @@
-package com.colin.example.simpletodolist.common.exception
+package com.colin.example.simpletodolist.global.exception
 
 import org.springframework.http.HttpStatus
 

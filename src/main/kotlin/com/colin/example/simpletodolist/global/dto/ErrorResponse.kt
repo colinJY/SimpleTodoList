@@ -1,4 +1,4 @@
-package com.colin.example.simpletodolist.common.dto
+package com.colin.example.simpletodolist.global.dto
 
 data class ErrorResponse(
         val code: String,

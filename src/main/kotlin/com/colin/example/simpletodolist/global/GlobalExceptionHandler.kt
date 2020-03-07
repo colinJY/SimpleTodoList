@@ -1,7 +1,7 @@
-package com.colin.example.simpletodolist.common
+package com.colin.example.simpletodolist.global
 
-import com.colin.example.simpletodolist.common.dto.ErrorResponse
-import com.colin.example.simpletodolist.common.exception.BusinessException
+import com.colin.example.simpletodolist.global.dto.ErrorResponse
+import com.colin.example.simpletodolist.global.exception.BusinessException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
