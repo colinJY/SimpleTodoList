@@ -4,9 +4,11 @@ import com.colin.example.simpletodolist.todo.domain.Todos
 import com.colin.example.simpletodolist.todo.domain.TodosRepository
 import com.colin.example.simpletodolist.todo.dto.InsertTodoRequestDto
 import com.colin.example.simpletodolist.todo.dto.InsertTodoResponseDto
+import com.colin.example.simpletodolist.todo.exception.TodosNotFoundException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -25,7 +27,6 @@ internal class TodoControllerTest(
         @Autowired val objectMapper: ObjectMapper,
         @Autowired val todosRepository: TodosRepository
 ) {
-
     @Test
     fun `todo_등록_확인`() {
         // given
@@ -67,9 +68,7 @@ internal class TodoControllerTest(
 
         // when & then
         webMvc.get("/todo/${savedTodo.id}") {
-            contentType = MediaType.APPLICATION_JSON
             accept = MediaType.APPLICATION_JSON
-            this.content = objectMapper.writeValueAsString(savedTodo.id)
         }.andDo {
             print()
         }.andExpect {
@@ -77,6 +76,18 @@ internal class TodoControllerTest(
             jsonPath("$.id") { value(savedTodo.id) }
             jsonPath("$.title") { value(savedTodo.title) }
             jsonPath("$.content") { value(savedTodo.content) }
+        }
+    }
+
+    @Test
+    fun `todo_조회_실패`() {
+
+        webMvc.get("/todo/999") {
+            accept = MediaType.APPLICATION_JSON
+        }.andDo {
+            print()
+        }.andExpect {
+            status { isNotFound }
         }
     }
 

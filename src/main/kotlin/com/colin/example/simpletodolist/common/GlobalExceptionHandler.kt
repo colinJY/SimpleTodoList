@@ -12,12 +12,12 @@ class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException::class)
     fun handleBusinessException(businessException: BusinessException): ResponseEntity<ErrorResponse> {
 
+        val httpStatus = businessException.errorCode.statusCode
         val errorResponse = ErrorResponse(
-                httpStatus = businessException.errorCode.statusCode,
                 message = businessException.errorCode.message,
                 detailMessage = businessException.detailMessage
         )
 
-        return ResponseEntity<ErrorResponse>(errorResponse, errorResponse.httpStatus)
+        return ResponseEntity<ErrorResponse>(errorResponse, httpStatus)
     }
 }
