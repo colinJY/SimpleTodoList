@@ -1,4 +1,4 @@
-package com.colin.example.simpletodolist.todo
+package com.colin.example.simpletodolist.todo.domain
 
 import com.colin.example.simpletodolist.common.domain.BaseTimeEntity
 import javax.persistence.*
