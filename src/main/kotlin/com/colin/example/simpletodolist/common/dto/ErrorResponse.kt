@@ -1,6 +1,7 @@
 package com.colin.example.simpletodolist.common.dto
 
 data class ErrorResponse(
+        val code: String,
         val message: String,
         val detailMessage: String,
         val errors: List<FieldError>? = null

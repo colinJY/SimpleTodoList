@@ -3,7 +3,7 @@ package com.colin.example.simpletodolist.common.exception
 import org.springframework.http.HttpStatus
 
 enum class ErrorCode(
-        val statusCode: HttpStatus,
+        val httpStatus: HttpStatus,
         val code: String,
         val message: String
 ) {
