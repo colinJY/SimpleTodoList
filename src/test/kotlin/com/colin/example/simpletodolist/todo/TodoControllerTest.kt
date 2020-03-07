@@ -88,6 +88,10 @@ internal class TodoControllerTest(
             print()
         }.andExpect {
             status { isNotFound }
+            jsonPath("$.code") { isNotEmpty }
+            jsonPath("$.message") { isNotEmpty }
+            jsonPath("$.detailMessage") { isNotEmpty }
+            jsonPath("$.errors") { isEmpty }
         }
     }
 
