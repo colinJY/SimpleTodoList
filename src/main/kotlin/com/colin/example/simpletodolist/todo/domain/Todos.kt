@@ -18,4 +18,5 @@ class Todos(title: String, content: String) : BaseTimeEntity() {
     var content: String = content
         private set
 
+
 }

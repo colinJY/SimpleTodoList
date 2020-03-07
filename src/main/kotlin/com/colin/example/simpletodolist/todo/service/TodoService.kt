@@ -1,13 +1,18 @@
 package com.colin.example.simpletodolist.todo.service
 
+import com.colin.example.simpletodolist.todo.domain.TodosRepository
 import com.colin.example.simpletodolist.todo.dto.InsertTodoRequestDto
 import com.colin.example.simpletodolist.todo.dto.InsertTodoResponseDto
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
-class TodoService {
-    fun insertPost(insertTodoRequestDto: InsertTodoRequestDto) : InsertTodoResponseDto {
+class TodoService(private val todosRepository: TodosRepository) {
 
-        return InsertTodoResponseDto(0)
+    @Transactional
+    fun insertTodo(insertTodoRequestDto: InsertTodoRequestDto) : InsertTodoResponseDto {
+
+        val savedTodo = todosRepository.save(insertTodoRequestDto.toEntity())
+        return InsertTodoResponseDto(savedTodo.id)
     }
 }

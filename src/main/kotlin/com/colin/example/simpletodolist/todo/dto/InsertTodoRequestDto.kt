@@ -12,5 +12,5 @@ data class InsertTodoRequestDto(
         @get:Size(max = 2000, message = "최대 2000byte까지 입력 가능합니다.")
         val content: String
 ) {
-    fun toEntity(title: String, content: String): Todos = Todos(title, content)
+    fun toEntity(): Todos = Todos(title, content)
 }

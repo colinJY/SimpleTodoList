@@ -34,6 +34,7 @@ internal class TodoControllerTest(
         // when
         val andReturn = webMvc.post("/todo") {
             contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
             this.content = objectMapper.writeValueAsString(request)
         }.andDo {
             print()
