@@ -6,7 +6,7 @@ data class ErrorResponse(
         val httpStatus: HttpStatus,
         val message: String,
         val detailMessage: String,
-        val errors: List<FieldError>?
+        val errors: List<FieldError>? = null
 ) {
     data class FieldError(
             val field: String,
