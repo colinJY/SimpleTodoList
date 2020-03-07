@@ -2,15 +2,11 @@ package com.colin.example.simpletodolist.todo
 
 import com.colin.example.simpletodolist.todo.dto.InsertTodoRequestDto
 import com.colin.example.simpletodolist.todo.dto.InsertTodoResponseDto
-import com.colin.example.simpletodolist.todo.dto.SelectTodoRequestDto
 import com.colin.example.simpletodolist.todo.dto.SelectTodoResponseDto
 import com.colin.example.simpletodolist.todo.service.TodoService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
@@ -26,14 +22,13 @@ class TodoController(val todoService: TodoService) {
         return ResponseEntity<InsertTodoResponseDto>(insertedTodo, HttpStatus.OK)
     }
 
-    @GetMapping("/todo")
+    @GetMapping("/todo/{id}")
     fun select(
-            @RequestBody selectTodoRequestDto: SelectTodoRequestDto
+            @PathVariable id: Long
     ) : ResponseEntity<SelectTodoResponseDto> {
 
-        val selectedTodo = todoService.selectTodo(selectTodoRequestDto)
+        val selectedTodo = todoService.selectTodo(id)
 
         return ResponseEntity<SelectTodoResponseDto>(selectedTodo, HttpStatus.OK)
     }
-
 }
