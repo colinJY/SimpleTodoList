@@ -1,12 +1,13 @@
 package com.colin.example.simpletodolist.todo
 
+import com.colin.example.simpletodolist.common.domain.BaseTimeEntity
 import javax.persistence.*
 
 @Entity
-class Todos(id: Long, title: String, content: String) {
+class Todos(title: String, content: String) : BaseTimeEntity() {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = id
+    var id: Long = 0
         private set
 
     @Column(nullable = false)
