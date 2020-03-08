@@ -7,6 +7,7 @@ import com.colin.example.simpletodolist.todo.dto.SelectTodoResponseDto
 import com.colin.example.simpletodolist.todo.service.TodoService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -35,7 +36,9 @@ class TodoController(val todoService: TodoService) {
     }
 
     @GetMapping
-    fun selectList(pageable: Pageable) : ResponseEntity<Page<SelectTodoListResponseDto>> {
+    fun selectList(
+            @PageableDefault(size = 10, page = 0) pageable: Pageable
+    ) : ResponseEntity<Page<SelectTodoListResponseDto>> {
 
         val selectedTodoList = todoService.selectTodoList(pageable)
 
