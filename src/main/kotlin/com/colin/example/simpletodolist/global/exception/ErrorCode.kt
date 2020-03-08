@@ -7,5 +7,6 @@ enum class ErrorCode(
         val code: String,
         val message: String
 ) {
-    ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "B001", "Entity Not Found")
+    ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "B001", "Entity Not Found"),
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "C001", "Invalid value")
 }
