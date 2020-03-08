@@ -1,15 +1,14 @@
 package com.colin.example.simpletodolist.todo
 
+import com.colin.example.simpletodolist.global.exception.ErrorCode
 import com.colin.example.simpletodolist.todo.domain.Todos
 import com.colin.example.simpletodolist.todo.domain.TodosRepository
 import com.colin.example.simpletodolist.todo.dto.InsertTodoRequestDto
 import com.colin.example.simpletodolist.todo.dto.InsertTodoResponseDto
-import com.colin.example.simpletodolist.todo.exception.TodosNotFoundException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -34,7 +33,7 @@ internal class TodoControllerTest(
     }
 
     @Test
-    fun `todo_등록_확인`() {
+    fun `todo_등록_성공`() {
         // given
         val title = "테스트제목"
         val content = "테스트내용"
@@ -103,6 +102,24 @@ internal class TodoControllerTest(
             jsonPath("$.message") { isNotEmpty }
             jsonPath("$.detailMessage") { isNotEmpty }
             jsonPath("$.errors") { doesNotExist() }
+        }
+    }
+    
+    @Test
+    fun `todo_조회_입력값_타입불일치`() {
+        // given
+        val id = "invalid_input"
+        val errorCode = ErrorCode.INVALID_TYPE_VALUE
+
+        // when & then
+        webMvc.get("/todos/$id") {
+            accept = MediaType.APPLICATION_JSON
+        }.andDo {
+            print()
+        }.andExpect {
+            status { isBadRequest }
+            jsonPath("$.code") { value(errorCode.code) }
+            jsonPath("$.message") { value(errorCode.message) }
         }
     }
 
