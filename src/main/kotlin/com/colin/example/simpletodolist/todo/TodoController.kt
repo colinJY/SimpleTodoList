@@ -11,6 +11,7 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.net.URI
 import javax.validation.Valid
 
 @RestController
@@ -24,7 +25,7 @@ class TodoController(val todoService: TodoService) {
 
         val insertedTodo = todoService.insertTodo(insertTodoRequestDto)
 
-        return ResponseEntity.ok(insertedTodo)
+        return ResponseEntity.created(URI.create("/todos")).body(insertedTodo)
     }
 
     @GetMapping("/{id}")
@@ -37,8 +38,8 @@ class TodoController(val todoService: TodoService) {
 
     @GetMapping
     fun selectList(
-            @PageableDefault(size = 10, page = 0) pageable: Pageable
-    ) : ResponseEntity<Page<SelectTodoListResponseDto>> {
+            @PageableDefault(size = 20, page = 0) pageable: Pageable
+    ): ResponseEntity<Page<SelectTodoListResponseDto>> {
 
         val selectedTodoList = todoService.selectTodoList(pageable)
 

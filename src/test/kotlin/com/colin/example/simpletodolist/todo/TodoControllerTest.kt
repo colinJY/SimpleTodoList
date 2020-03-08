@@ -47,7 +47,7 @@ internal class TodoControllerTest(
         }.andDo {
             print()
         }.andExpect {
-            status { isOk }
+            status { isCreated }
             jsonPath("$.id") { isNumber }
         }.andReturn()
 
@@ -60,6 +60,26 @@ internal class TodoControllerTest(
         assertThat(byId).isNotNull
         assertThat(byId.title).isEqualTo(title)
         assertThat(byId.content).isEqualTo(content)
+    }
+
+    @Test
+    fun `todo_등록_필수값 예외`() {
+        // given
+        val request = InsertTodoRequestDto("", "")
+        val errorCode = ErrorCode.INVALID_INPUT_VALUE
+
+        // when & then
+        webMvc.post("/todos") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+            this.content = objectMapper.writeValueAsString(request)
+        }.andDo {
+            print()
+        }.andExpect {
+            status { isBadRequest }
+            jsonPath("$.code") { value(errorCode.code) }
+            jsonPath("$.message") { value(errorCode.message) }
+        }
     }
 
     @Test
