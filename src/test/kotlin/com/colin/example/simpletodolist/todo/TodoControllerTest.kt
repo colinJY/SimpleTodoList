@@ -7,6 +7,7 @@ import com.colin.example.simpletodolist.todo.dto.InsertTodoResponseDto
 import com.colin.example.simpletodolist.todo.exception.TodosNotFoundException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -27,6 +28,11 @@ internal class TodoControllerTest(
         @Autowired val objectMapper: ObjectMapper,
         @Autowired val todosRepository: TodosRepository
 ) {
+    @BeforeEach
+    fun setUp() {
+        todosRepository.deleteAll()
+    }
+
     @Test
     fun `todo_등록_확인`() {
         // given
@@ -35,7 +41,7 @@ internal class TodoControllerTest(
         val request = InsertTodoRequestDto(title, content)
 
         // when & then
-        val andReturn = webMvc.post("/todo") {
+        val andReturn = webMvc.post("/todos") {
             contentType = MediaType.APPLICATION_JSON
             accept = MediaType.APPLICATION_JSON
             this.content = objectMapper.writeValueAsString(request)
@@ -60,14 +66,10 @@ internal class TodoControllerTest(
     @Test
     fun `todo_조회_확인`() {
         // given
-        val title = "테스트제목"
-        val content = "테스트내용"
-
-        val todo = Todos(title, content)
-        val savedTodo = todosRepository.save(todo)
+        val savedTodo = createTodoItem()
 
         // when & then
-        webMvc.get("/todo/${savedTodo.id}") {
+        webMvc.get("/todos/${savedTodo.id}") {
             accept = MediaType.APPLICATION_JSON
         }.andDo {
             print()
@@ -79,10 +81,19 @@ internal class TodoControllerTest(
         }
     }
 
+    private fun createTodoItem(): Todos {
+        val title = "테스트제목"
+        val content = "테스트내용"
+
+        val todo = Todos(title, content)
+        val savedTodo = todosRepository.save(todo)
+        return savedTodo
+    }
+
     @Test
     fun `todo_조회_실패`() {
 
-        webMvc.get("/todo/999") {
+        webMvc.get("/todos/999") {
             accept = MediaType.APPLICATION_JSON
         }.andDo {
             print()
@@ -92,6 +103,25 @@ internal class TodoControllerTest(
             jsonPath("$.message") { isNotEmpty }
             jsonPath("$.detailMessage") { isNotEmpty }
             jsonPath("$.errors") { doesNotExist() }
+        }
+    }
+
+    @Test
+    fun `todo_리스트조회_성공`() {
+        // givin
+        val savedTodo = createTodoItem()
+
+        // when & then
+        webMvc.get("/todos") {
+            accept = MediaType.APPLICATION_JSON
+        }.andDo {
+            print()
+        }.andExpect {
+            status { isOk }
+            jsonPath("$.content.length()") { value(1) }
+            jsonPath("$.content.[0].id") { value(savedTodo.id) }
+            jsonPath("$.content.[0].title") { value(savedTodo.title) }
+            jsonPath("$.content.[0].content") { value(savedTodo.content) }
         }
     }
 
