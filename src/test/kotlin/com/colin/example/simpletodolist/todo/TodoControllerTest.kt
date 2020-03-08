@@ -125,4 +125,16 @@ internal class TodoControllerTest(
         }
     }
 
+    @Test
+    fun `todo_리스트조회_공집합`() {
+
+        webMvc.get("/todos") {
+            accept = MediaType.APPLICATION_JSON
+        }.andDo {
+            print()
+        }.andExpect {
+            status { isOk }
+            jsonPath("$.content.length()") { value(0) }
+        }
+    }
 }
