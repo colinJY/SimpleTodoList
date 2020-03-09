@@ -1,0 +1,6 @@
+logging:
+  level:
+    com:
+      colin:
+        example:
+          simpletodolist: trace

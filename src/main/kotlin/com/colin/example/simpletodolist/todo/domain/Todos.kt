@@ -18,5 +18,7 @@ class Todos(title: String, content: String) : BaseTimeEntity() {
     var content: String = content
         private set
 
-
+    fun update(content: String) {
+        this.content = content
+    }
 }

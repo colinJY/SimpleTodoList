@@ -1,9 +1,6 @@
 package com.colin.example.simpletodolist.todo
 
-import com.colin.example.simpletodolist.todo.dto.InsertTodoRequestDto
-import com.colin.example.simpletodolist.todo.dto.InsertTodoResponseDto
-import com.colin.example.simpletodolist.todo.dto.SelectTodoListResponseDto
-import com.colin.example.simpletodolist.todo.dto.SelectTodoResponseDto
+import com.colin.example.simpletodolist.todo.dto.*
 import com.colin.example.simpletodolist.todo.service.TodoService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -44,5 +41,13 @@ class TodoController(val todoService: TodoService) {
         val selectedTodoList = todoService.selectTodoList(pageable)
 
         return ResponseEntity.ok(selectedTodoList)
+    }
+
+    @PutMapping("/{id}")
+    fun update(@PathVariable id: Long, @RequestBody updateTodoRequestDto: UpdateTodoRequestDto): ResponseEntity<UpdateTodoResponseDto> {
+
+        val updatedTodo = todoService.updateTodo(id ,updateTodoRequestDto)
+
+        return ResponseEntity.ok(updatedTodo)
     }
 }

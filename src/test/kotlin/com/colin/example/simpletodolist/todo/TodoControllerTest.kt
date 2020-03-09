@@ -5,6 +5,7 @@ import com.colin.example.simpletodolist.todo.domain.Todos
 import com.colin.example.simpletodolist.todo.domain.TodosRepository
 import com.colin.example.simpletodolist.todo.dto.InsertTodoRequestDto
 import com.colin.example.simpletodolist.todo.dto.InsertTodoResponseDto
+import com.colin.example.simpletodolist.todo.dto.UpdateTodoRequestDto
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -14,14 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 
 @ExtendWith(SpringExtension::class)
 @AutoConfigureMockMvc
 @SpringBootTest
+@ActiveProfiles("test")
 internal class TodoControllerTest(
         @Autowired val webMvc: MockMvc,
         @Autowired val objectMapper: ObjectMapper,
@@ -105,8 +109,7 @@ internal class TodoControllerTest(
         val content = "테스트내용"
 
         val todo = Todos(title, content)
-        val savedTodo = todosRepository.save(todo)
-        return savedTodo
+        return todosRepository.save(todo)
     }
 
     @Test
@@ -172,6 +175,54 @@ internal class TodoControllerTest(
         }.andExpect {
             status { isOk }
             jsonPath("$.content.length()") { value(0) }
+        }
+    }
+    
+    @Test
+    fun `todo_수정_성공`() {
+        // given
+        val todoItem = createTodoItem()
+        val updateContent = "수정된 내용"
+        todoItem.update(updateContent)
+
+        // when & then
+        webMvc.put("/todos/${todoItem.id}") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(UpdateTodoRequestDto(updateContent))
+            accept = MediaType.APPLICATION_JSON
+        }.andDo {
+            print()
+        }.andExpect {
+            status { isOk }
+            jsonPath("$.id") { value(todoItem.id) }
+            jsonPath("$.title") { value(todoItem.title) }
+            jsonPath("$.content") { value(todoItem.content) }
+        }
+
+        val byId = todosRepository.findById(todoItem.id).orElse(null)
+        assertThat(byId).isNotNull
+        assertThat(byId.title).isEqualTo(todoItem.title)
+        assertThat(byId.content).isEqualTo(todoItem.content)
+    }
+
+    @Test
+    fun `todo_수정_선조회_실패`() {
+        // given
+        val errorCode = ErrorCode.ENTITY_NOT_FOUND
+        val detailMessage = "수정할 Todo가 존재하지 않습니다."
+
+        // when & then
+        webMvc.put("/todos/999") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(UpdateTodoRequestDto("선조회실패"))
+            accept = MediaType.APPLICATION_JSON
+        }.andDo {
+            print()
+        }.andExpect {
+            status { isNotFound }
+            jsonPath("$.code") { value(errorCode.code) }
+            jsonPath("$.message") { value(errorCode.message) }
+            jsonPath("$.detailMessage") { value(detailMessage) }
         }
     }
 }
