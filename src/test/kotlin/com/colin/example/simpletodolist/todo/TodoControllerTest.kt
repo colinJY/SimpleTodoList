@@ -7,7 +7,6 @@ import com.colin.example.simpletodolist.todo.dto.InsertTodoRequestDto
 import com.colin.example.simpletodolist.todo.dto.InsertTodoResponseDto
 import com.colin.example.simpletodolist.todo.dto.UpdateTodoRequestDto
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.annotation.JsonAppend
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -89,7 +88,7 @@ internal class TodoControllerTest(
     @Test
     fun `todo_조회_확인`() {
         // given
-        val savedTodo = createTodoItem()
+        val savedTodo = createTodoItem("테스트제목", "테스트내용")
 
         // when & then
         webMvc.get("/todos/${savedTodo.id}") {
@@ -104,10 +103,7 @@ internal class TodoControllerTest(
         }
     }
 
-    private fun createTodoItem(): Todos {
-        val title = "테스트제목"
-        val content = "테스트내용"
-
+    private fun createTodoItem(title: String, content: String): Todos {
         val todo = Todos(title, content)
         return todosRepository.save(todo)
     }
@@ -149,7 +145,7 @@ internal class TodoControllerTest(
     @Test
     fun `todo_리스트조회_성공`() {
         // givin
-        val savedTodo = createTodoItem()
+        val savedTodo = createTodoItem("테스트타이틀", "테스트내용")
 
         // when & then
         webMvc.get("/todos") {
@@ -181,7 +177,7 @@ internal class TodoControllerTest(
     @Test
     fun `todo_수정_성공`() {
         // given
-        val todoItem = createTodoItem()
+        val todoItem = createTodoItem("테스트제목", "테스트내용")
         val updateContent = "수정된 내용"
         todoItem.update(updateContent)
 
@@ -229,7 +225,7 @@ internal class TodoControllerTest(
     @Test
     fun `todo_삭제_성공`() {
         // given
-        val todo = createTodoItem()
+        val todo = createTodoItem("테스트제목", "테스트내용")
 
         // when & then
         webMvc.delete("/todos/${todo.id}").andDo {
@@ -257,4 +253,73 @@ internal class TodoControllerTest(
             jsonPath("$.message") { value(errorCode.message) }
         }
     }
+
+    @Test
+    fun `todo_리스트_수정_성공`() {
+        // given
+        val todoItemList = IntRange(0, 9).map {
+            createTodoItem("테스트제목${it}", "테스트내용${it}")
+        }.mapIndexed { index, todos ->
+            todos.apply { update("수정된내용${index}") }
+        }.toList()
+
+        // when & then
+        webMvc.put("/todos") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(todoItemList)
+        }.andDo {
+            print()
+        }.andExpect {
+            status { isNoContent }
+        }
+
+        assertThat(todosRepository.count()).isEqualTo(todoItemList.size.toLong())
+
+        todoItemList.forEach { inputTodo ->
+            val byId = todosRepository.findById(inputTodo.id).orElse(null)
+
+            assertThat(byId).isNotNull
+            assertThat(byId.id).isEqualTo(inputTodo.id)
+            assertThat(byId.title).isEqualTo(inputTodo.title)
+            assertThat(byId.content).isEqualTo(inputTodo.content)
+        }
+    }
+
+    @Test
+    fun `todo_리스트_수정_실패_전체롤백`() {
+        // given
+        val originTodoItemList = IntRange(0, 9).map {
+            createTodoItem("테스트제목$it", "테스트내용$it")
+        }.toList()
+
+        val todoItemList = originTodoItemList.mapIndexed { index, todos ->
+            Todos(todos.title, "수정된내용$index", todos.id)
+        }.toMutableList()
+        // 테이블에 없는 내역 추가
+        todoItemList.add(Todos("실패할제목", "실패할내용", 11))
+
+        // 발생될 에러
+        val errorCode = ErrorCode.ENTITY_NOT_FOUND
+
+        webMvc.put("/todos") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(todoItemList)
+        }.andDo {
+            print()
+        }.andExpect {
+            status { isNotFound }
+            jsonPath("$.code") { value(errorCode.code) }
+            jsonPath("$.message") { value(errorCode.message) }
+        }
+
+        originTodoItemList.forEach { originTodos ->
+            val byId = todosRepository.findById(originTodos.id).orElse(null)
+
+            assertThat(byId).isNotNull
+            assertThat(byId.id).isEqualTo(originTodos.id)
+            assertThat(byId.title).isEqualTo(originTodos.title)
+            assertThat(byId.content).isEqualTo(originTodos.content)
+        }
+    }
+
 }

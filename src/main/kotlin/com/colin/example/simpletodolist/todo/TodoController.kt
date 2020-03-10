@@ -5,7 +5,6 @@ import com.colin.example.simpletodolist.todo.service.TodoService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
@@ -55,6 +54,14 @@ class TodoController(val todoService: TodoService) {
     fun delete(@PathVariable id: Long): ResponseEntity<Any> {
 
         todoService.deleteTodo(id)
+
+        return ResponseEntity.noContent().build()
+    }
+
+    @PutMapping
+    fun updateTodoList(@RequestBody updateTodoListRequestDto: List<UpdateTodoListRequestDto>): ResponseEntity<Any> {
+
+        todoService.updateTodoList(updateTodoListRequestDto)
 
         return ResponseEntity.noContent().build()
     }

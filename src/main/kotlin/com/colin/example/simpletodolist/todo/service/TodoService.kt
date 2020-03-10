@@ -6,6 +6,7 @@ import com.colin.example.simpletodolist.todo.exception.TodosNotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
 @Service
@@ -46,5 +47,10 @@ class TodoService(private val todosRepository: TodosRepository) {
     fun deleteTodo(id: Long) {
         todosRepository.findById(id).orElseThrow { throw TodosNotFoundException("삭제할 Todo가 존재하지 않습니다.") }
         todosRepository.deleteById(id)
+    }
+
+    @Transactional
+    fun updateTodoList(updateTodoListRequestDto: List<UpdateTodoListRequestDto>) {
+        updateTodoListRequestDto.forEach { updateTodo(it.id, UpdateTodoRequestDto(it.content)) }
     }
 }
