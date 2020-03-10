@@ -19,6 +19,7 @@ class TodoService(private val todosRepository: TodosRepository) {
         return InsertTodoResponseDto(savedTodo)
     }
 
+    @Transactional(readOnly = true)
     fun selectTodo(id: Long): SelectTodoResponseDto {
 
         val selectedTodo = todosRepository.findById(id)
@@ -27,6 +28,7 @@ class TodoService(private val todosRepository: TodosRepository) {
         return SelectTodoResponseDto(selectedTodo)
     }
 
+    @Transactional(readOnly = true)
     fun selectTodoList(pageable: Pageable): Page<SelectTodoListResponseDto> {
 
         return todosRepository.findAll(pageable).map {
