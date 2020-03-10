@@ -53,6 +53,8 @@ internal class TodoControllerTest(
         }.andExpect {
             status { isCreated }
             jsonPath("$.id") { isNumber }
+            jsonPath("$.title") { value(title) }
+            jsonPath("$.content") { value(content) }
         }.andReturn()
 
         val response = objectMapper.readValue(

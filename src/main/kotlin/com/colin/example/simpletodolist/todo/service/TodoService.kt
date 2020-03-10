@@ -16,7 +16,7 @@ class TodoService(private val todosRepository: TodosRepository) {
     fun insertTodo(insertTodoRequestDto: InsertTodoRequestDto) : InsertTodoResponseDto {
 
         val savedTodo = todosRepository.save(insertTodoRequestDto.toEntity())
-        return InsertTodoResponseDto(savedTodo.id)
+        return InsertTodoResponseDto(savedTodo)
     }
 
     fun selectTodo(id: Long): SelectTodoResponseDto {
