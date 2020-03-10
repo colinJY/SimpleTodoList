@@ -50,4 +50,12 @@ class TodoController(val todoService: TodoService) {
 
         return ResponseEntity.ok(updatedTodo)
     }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: Long): ResponseEntity<Any> {
+
+        todoService.deleteTodo(id)
+
+        return ResponseEntity.noContent().build()
+    }
 }

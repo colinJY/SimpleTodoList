@@ -7,6 +7,7 @@ import com.colin.example.simpletodolist.todo.dto.InsertTodoRequestDto
 import com.colin.example.simpletodolist.todo.dto.InsertTodoResponseDto
 import com.colin.example.simpletodolist.todo.dto.UpdateTodoRequestDto
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.annotation.JsonAppend
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,10 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.put
+import org.springframework.test.web.servlet.*
 
 @ExtendWith(SpringExtension::class)
 @AutoConfigureMockMvc
@@ -225,6 +223,38 @@ internal class TodoControllerTest(
             jsonPath("$.code") { value(errorCode.code) }
             jsonPath("$.message") { value(errorCode.message) }
             jsonPath("$.detailMessage") { value(detailMessage) }
+        }
+    }
+
+    @Test
+    fun `todo_삭제_성공`() {
+        // given
+        val todo = createTodoItem()
+
+        // when & then
+        webMvc.delete("/todos/${todo.id}").andDo {
+            print()
+        }.andExpect {
+            status { isNoContent }
+        }
+
+        val byId = todosRepository.findById(todo.id).orElse(null)
+
+        assertThat(byId).isNull()
+    }
+
+    @Test
+    fun `todo_삭제_실패`() {
+        // given
+        val errorCode = ErrorCode.ENTITY_NOT_FOUND
+
+        // when & then
+        webMvc.delete("/todos/999").andDo {
+            print()
+        }.andExpect {
+            status { isNotFound }
+            jsonPath("$.code") { value(errorCode.code) }
+            jsonPath("$.message") { value(errorCode.message) }
         }
     }
 }

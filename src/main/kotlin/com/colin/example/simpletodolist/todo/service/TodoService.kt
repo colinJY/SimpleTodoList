@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import javax.swing.text.AbstractDocument
 
 @Service
 class TodoService(private val todosRepository: TodosRepository) {
@@ -41,5 +40,11 @@ class TodoService(private val todosRepository: TodosRepository) {
         todo.update(content = updateTodoRequestDto.content)
 
         return UpdateTodoResponseDto(todo)
+    }
+
+    @Transactional
+    fun deleteTodo(id: Long) {
+        todosRepository.findById(id).orElseThrow { throw TodosNotFoundException("삭제할 Todo가 존재하지 않습니다.") }
+        todosRepository.deleteById(id)
     }
 }
